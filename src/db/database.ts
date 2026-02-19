@@ -313,13 +313,75 @@ const DEFAULT_SETTINGS: AppSettings = {
   resumeTimerBehavior: "continue",
 };
 
+function parseBoolean(value: unknown, fallback: boolean): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    if (value === "true") return true;
+    if (value === "false") return false;
+  }
+  return fallback;
+}
+
+function parseNumber(value: unknown, fallback: number): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function normalizeSettings(raw: unknown): AppSettings {
+  if (!raw || typeof raw !== "object") {
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  const data = raw as Partial<Record<keyof AppSettings, unknown>>;
+
+  return {
+    timerVisible: parseBoolean(
+      data.timerVisible,
+      DEFAULT_SETTINGS.timerVisible
+    ),
+    timerPosition:
+      data.timerPosition === "top-left" || data.timerPosition === "top-right"
+        ? data.timerPosition
+        : DEFAULT_SETTINGS.timerPosition,
+    timerShowDigits: parseBoolean(
+      data.timerShowDigits,
+      DEFAULT_SETTINGS.timerShowDigits
+    ),
+    targetTimeSec: parseNumber(
+      data.targetTimeSec,
+      DEFAULT_SETTINGS.targetTimeSec
+    ),
+    learningMode:
+      data.learningMode === "focus" || data.learningMode === "practice"
+        ? data.learningMode
+        : DEFAULT_SETTINGS.learningMode,
+    offlineMode:
+      data.offlineMode === "all" || data.offlineMode === "on-demand"
+        ? data.offlineMode
+        : DEFAULT_SETTINGS.offlineMode,
+    resumeTimerBehavior:
+      data.resumeTimerBehavior === "continue" ||
+      data.resumeTimerBehavior === "reset"
+        ? data.resumeTimerBehavior
+        : DEFAULT_SETTINGS.resumeTimerBehavior,
+  };
+}
+
 export async function getSettings(): Promise<AppSettings> {
   const database = await getDatabase();
   const row = await database.getFirstAsync<{ key: string; value: string }>(
     `SELECT * FROM settings WHERE key = 'app_settings'`
   );
   if (!row) return { ...DEFAULT_SETTINGS };
-  return { ...DEFAULT_SETTINGS, ...JSON.parse(row.value) };
+  try {
+    return normalizeSettings(JSON.parse(row.value));
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
