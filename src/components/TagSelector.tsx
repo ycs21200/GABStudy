@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors, Spacing, FontSize, BorderRadius } from "../constants/theme";
 import { MISTAKE_TAGS } from "../constants/categories";
 import { MistakeTag } from "../types";
+import { toBoolean } from "../utils/boolean";
 
 interface TagSelectorProps {
   visible: boolean;
@@ -41,8 +42,10 @@ export function TagSelector({
     onClose();
   };
 
+  const isVisible = toBoolean(visible);
+
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={isVisible} transparent={true} animationType="slide">
       <TouchableOpacity
         style={styles.backdrop}
         activeOpacity={1}

@@ -19,6 +19,7 @@ import {
   resetTestHistory,
 } from "../src/db/database";
 import { AppSettings } from "../src/types";
+import { toBoolean } from "../src/utils/boolean";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -127,7 +128,7 @@ export default function SettingsScreen() {
           <View style={styles.settingRow}>
             <Text style={styles.settingLabel}>タイマー表示</Text>
             <Switch
-              value={settings.timerVisible}
+              value={toBoolean(settings.timerVisible)}
               onValueChange={(v) => updateSetting("timerVisible", v)}
               trackColor={{ true: Colors.primary }}
             />
@@ -135,7 +136,7 @@ export default function SettingsScreen() {
           <View style={styles.settingRow}>
             <Text style={styles.settingLabel}>数字表示</Text>
             <Switch
-              value={settings.timerShowDigits}
+              value={toBoolean(settings.timerShowDigits)}
               onValueChange={(v) => updateSetting("timerShowDigits", v)}
               trackColor={{ true: Colors.primary }}
             />
