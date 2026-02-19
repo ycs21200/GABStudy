@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, Spacing, FontSize, BorderRadius } from "../constants/theme";
+import { toBoolean } from "../utils/boolean";
 
 interface CalcEntry {
   id: string;
@@ -88,7 +89,8 @@ export function CalcMemo({
   const [editingId, setEditingId] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
-  if (!visible) return null;
+  const isVisible = toBoolean(visible);
+  if (!isVisible) return null;
 
   const handleCalculate = () => {
     if (!input.trim()) return;
