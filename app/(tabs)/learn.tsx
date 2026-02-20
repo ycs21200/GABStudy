@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, Spacing, FontSize, BorderRadius } from "../../src/constants/theme";
@@ -57,9 +57,11 @@ export default function LearnScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadStatuses();
-  }, [loadStatuses]);
+  useFocusEffect(
+    useCallback(() => {
+      loadStatuses();
+    }, [loadStatuses])
+  );
 
   // Filter and sort problems
   const filteredProblems = SAMPLE_PROBLEMS.filter((p) => {

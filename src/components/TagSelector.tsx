@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Modal,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Colors, Spacing, FontSize, BorderRadius } from "../constants/theme";
 import { MISTAKE_TAGS } from "../constants/categories";
 import { MistakeTag } from "../types";
@@ -29,6 +28,11 @@ export function TagSelector({
 }: TagSelectorProps) {
   const [tags, setTags] = useState<MistakeTag[]>(selectedTags);
   const [memo, setMemo] = useState(initialMemo);
+
+  useEffect(() => {
+    setTags(selectedTags);
+    setMemo(initialMemo);
+  }, [selectedTags, initialMemo]);
 
   const toggleTag = (tag: MistakeTag) => {
     setTags((prev) =>
