@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -30,6 +30,15 @@ export function TagSelector({
 }: TagSelectorProps) {
   const [tags, setTags] = useState<MistakeTag[]>(selectedTags);
   const [memo, setMemo] = useState(initialMemo);
+
+  // Sync local state when props change (e.g. navigating to a different problem)
+  useEffect(() => {
+    setTags(selectedTags);
+  }, [selectedTags]);
+
+  useEffect(() => {
+    setMemo(initialMemo);
+  }, [initialMemo]);
 
   const toggleTag = (tag: MistakeTag) => {
     setTags((prev) =>

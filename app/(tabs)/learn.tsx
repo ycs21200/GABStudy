@@ -7,7 +7,7 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, Spacing, FontSize, BorderRadius } from "../../src/constants/theme";
@@ -39,6 +39,21 @@ export default function LearnScreen() {
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
 
+  // Sync filter & category from navigation params (e.g. home screen bookmark button)
+  useEffect(() => {
+    if (params.filter) {
+      const f = params.filter as FilterType;
+      setFilter(f);
+      if (f !== "all") setShowFilters(true);
+    }
+  }, [params.filter]);
+
+  useEffect(() => {
+    if (params.category) {
+      setSelectedCategory(params.category as Category);
+    }
+  }, [params.category]);
+
   const loadStatuses = useCallback(async () => {
     try {
       const attempts = await getAllAttempts();
@@ -57,9 +72,12 @@ export default function LearnScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadStatuses();
-  }, [loadStatuses]);
+  // Reload statuses & bookmarks every time the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      loadStatuses();
+    }, [loadStatuses])
+  );
 
   // Filter and sort problems
   const filteredProblems = SAMPLE_PROBLEMS.filter((p) => {
